@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <main className="flex flex-col items-center justify-center bg-black font-mono h-screen w-screen pt-28 px-60">
       <div className="flex flex-col gap-6 items-center justify-center w-full">
-        <span className="text-5xl">Project Chimera</span>
+        <span className="text-5xl">Project BW2RGBy</span>
         <div className="min-h-10">
           <Typewriter
             words={["Bringing old images back to life", "Restoring memories"]}
