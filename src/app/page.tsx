@@ -1,10 +1,11 @@
 "use client";
 import { useState } from "react";
-
 import { Typewriter } from "react-simple-typewriter";
 import ReactBeforeSliderComponent from "react-before-after-slider-component";
 import "react-before-after-slider-component/dist/build.css";
 import Image from "next/image";
+import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
+import { IoIosArrowDropdown } from "react-icons/io";
 
 const FIRST_IMAGE = {
   imageUrl:
@@ -17,6 +18,11 @@ const SECOND_IMAGE = {
 
 export default function Home() {
   const [image, setImage] = useState<string | null>(null);
+  const [selectedProcess, setSelectedProcess] = useState("Select Process");
+
+  const handleMenuItemClick = (processName: string) => {
+    setSelectedProcess(processName);
+  };
 
   const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
@@ -26,7 +32,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center bg-black font-mono h-screen w-screen pt-28 px-60">
+    <main className="flex flex-col items-center justify-center bg-black font-sans h-screen w-screen pt-28 text-white">
       <div className="flex flex-col gap-6 items-center justify-center w-full">
         <span className="text-5xl">Project BW2RGBy</span>
         <div className="min-h-10">
@@ -38,8 +44,8 @@ export default function Home() {
           />
         </div>
       </div>
-      <div className="flex justify-evenly w-full h-full items-center py-20">
-        <div className="flex flex-col gap-10 w-1/2 items-center">
+      <div className="flex justify-center gap-48 px-32 w-full h-full items-center py-20">
+        <div className="flex flex-col items-center">
           <div className="flex h-96 w-96 overflow-hidden border border-dashed items-center justify-center relative">
             {image ? (
               <Image
@@ -52,7 +58,7 @@ export default function Home() {
               <p>No image uploaded</p>
             )}
           </div>
-          <div className="flex justify-between w-1/2">
+          <div className="flex justify-center w-full">
             <input
               type="file"
               id="fileInput"
@@ -61,19 +67,54 @@ export default function Home() {
               style={{ display: "none" }}
             />
             <button
-              className="p-2 bg-blue-500 ring-1 ring-white rounded-lg"
+              className="p-2 bg-blue-500 ring-1 ring-white rounded-lg mt-6"
               onClick={() => document.getElementById("fileInput")?.click()}
             >
               Upload Image
             </button>
-            <button className="p-2 bg-green-500 ring-1 ring-white rounded-lg w-fit">
-              Process
-            </button>
           </div>
         </div>
-        <div className="h-80 min-h-[1em] w-0.5 bg-neutral-100 dark:bg-white/30" />
+        {/* <div className="h-80 min-h-[1em] w-0.5 bg-neutral-100 dark:bg-white/30" /> */}
+        <div className="p-2 bg-green-500 ring-1 ring-white rounded-lg w-fit">
+          <button className="">{selectedProcess} |</button>
+          <span className="align-middle">
+            <Menu>
+              <MenuButton className="pl-1 mt-1">
+                <IoIosArrowDropdown />
+              </MenuButton>
+              <div className="text-black">
+                <MenuList bg="gray.200">
+                  <MenuItem
+                    bg="gray.200"
+                    onClick={() => handleMenuItemClick("Face Restoration")}
+                  >
+                    Face restoration
+                  </MenuItem>
+                  <MenuItem
+                    bg="gray.200"
+                    onClick={() => handleMenuItemClick("Image Upscaling")}
+                  >
+                    Image upscaling
+                  </MenuItem>
+                  <MenuItem
+                    bg="gray.200"
+                    onClick={() => handleMenuItemClick("Color Correction")}
+                  >
+                    Color correction
+                  </MenuItem>
+                  <MenuItem
+                    bg="gray.200"
+                    onClick={() => handleMenuItemClick("Scratch Removal")}
+                  >
+                    Scratch removal
+                  </MenuItem>
+                </MenuList>
+              </div>
+            </Menu>
+          </span>
+        </div>
         <div className="flex flex-col gap-6 justify-start h-full">
-          <span className="text-center text-xl underline">Result</span>
+          <span className="text-center text-xl">Output</span>
           <ReactBeforeSliderComponent
             firstImage={FIRST_IMAGE}
             secondImage={SECOND_IMAGE}
