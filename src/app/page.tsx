@@ -32,7 +32,7 @@ export default function Home() {
   };
 
   return (
-    <main className="flex flex-col items-center justify-center bg-black font-sans h-screen w-screen pt-28 text-white">
+    <main className="flex flex-col items-center justify-center bg-black font-sans h-screen w-screen pt-28 text-white overflow-auto">
       <div className="flex flex-col gap-6 items-center justify-center w-full">
         <span className="text-5xl">Project BW2RGBy</span>
         <div className="min-h-10">
@@ -44,9 +44,10 @@ export default function Home() {
           />
         </div>
       </div>
-      <div className="flex justify-center gap-48 px-32 w-full h-full items-center py-20">
-        <div className="flex flex-col items-center">
-          <div className="flex h-96 w-96 overflow-hidden border border-dashed items-center justify-center relative">
+      <div className="flex justify-center gap-48 px-32 lg:px-24 w-full h-full items-center py-20">
+        <div className="flex flex-col items-center gap-6 justify-center">
+          <span className="text-center text-xl">Input</span>
+          <div className="flex h-96 w-96 lg:h-80 lg:w-80 overflow-hidden border border-dashed items-center justify-center relative">
             {image ? (
               <Image
                 src={image}
@@ -113,7 +114,7 @@ export default function Home() {
             </Menu>
           </span>
         </div>
-        <div className="flex flex-col gap-6 justify-start h-full">
+        <div className="flex flex-col gap-6 justify-center items-center h-full">
           <span className="text-center text-xl">Output</span>
           <ReactBeforeSliderComponent
             firstImage={FIRST_IMAGE}
