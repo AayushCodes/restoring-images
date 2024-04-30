@@ -84,7 +84,7 @@ export default function Home() {
         <div className="flex flex-col gap-6 justify-center items-center h-full">
           <span className="text-center text-xl font-semibold">Result</span>
           <div
-            style={{ maxWidth: "300px", minHeight: "100px" }}
+            style={{ maxWidth: "500px", minHeight: "100px" }}
             className="ring-1 ring-white rounded-lg overflow-hidden"
           >
             <ReactBeforeSliderComponent
