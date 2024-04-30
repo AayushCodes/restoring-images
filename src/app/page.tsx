@@ -83,8 +83,10 @@ export default function Home() {
         </div>
         <div className="flex flex-col gap-6 justify-center items-center h-full">
           <span className="text-center text-xl font-semibold">Result</span>
-          <div style={{ maxWidth: "300px", minHeight: "100px" }}>
-            {/* Container size */}
+          <div
+            style={{ maxWidth: "300px", minHeight: "100px" }}
+            className="ring-1 ring-white rounded-lg overflow-hidden"
+          >
             <ReactBeforeSliderComponent
               firstImage={image ? { imageUrl: image } : FIRST_IMAGE}
               secondImage={SECOND_IMAGE}

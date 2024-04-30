@@ -26,7 +26,7 @@ function FileInputComponent({
       name="file"
       onupdatefiles={handleUpdateFiles}
       acceptedFileTypes={["image/jpeg", "image/png", "image/gif"]}
-      labelIdle='<span class="filepond--label-idle"> Drag & Drop your images or </span><span class="filepond--label-action">Browse</span>'
+      labelIdle='<span class="filepond--label-idle"> Drag & Drop your image or </span><span class="filepond--label-action">Browse</span>'
     />
   );
 }
