@@ -1,11 +1,12 @@
 "use client";
-import { useState } from "react";
-import { Typewriter } from "react-simple-typewriter";
+import { useEffect, useState } from "react";
 import ReactBeforeSliderComponent from "react-before-after-slider-component";
 import "react-before-after-slider-component/dist/build.css";
-import Image from "next/image";
+// import Image from "next/image";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { IoIosArrowDropdown } from "react-icons/io";
+import Navbar from "./component/Navbar";
+import Input from "./component/Input";
 
 const FIRST_IMAGE = {
   imageUrl:
@@ -18,65 +19,31 @@ const SECOND_IMAGE = {
 
 export default function Home() {
   const [image, setImage] = useState<string | null>(null);
+  const [file, setFile] = useState();
   const [selectedProcess, setSelectedProcess] = useState("Select Process");
 
   const handleMenuItemClick = (processName: string) => {
     setSelectedProcess(processName);
   };
 
-  const onImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
+  useEffect(() => {
     if (file) {
       setImage(URL.createObjectURL(file));
     }
-  };
+  }, [file]);
+
+  console.log("file", file);
+  console.log("image", image);
 
   return (
-    <main className="flex flex-col items-center justify-center bg-black font-sans h-screen w-screen pt-28 text-white overflow-auto">
-      <div className="flex flex-col gap-6 items-center justify-center w-full">
-        <span className="text-5xl">Project BW2RGBy</span>
-        <div className="min-h-10">
-          <Typewriter
-            words={["Bringing old images back to life", "Restoring memories"]}
-            loop={Infinity}
-            deleteSpeed={80}
-            typeSpeed={100}
-          />
-        </div>
-      </div>
-      <div className="flex justify-center gap-48 px-32 lg:px-24 w-full h-full items-center py-20">
+    <main className="flex flex-col items-center justify-center bg-black font-sans h-screen w-screen text-white overflow-auto">
+      <Navbar />
+      <div className="flex justify-center gap-32 w-full h-full items-center py-20">
         <div className="flex flex-col items-center gap-6 justify-center">
-          <span className="text-center text-xl">Input</span>
-          <div className="flex h-96 w-96 lg:h-80 lg:w-80 overflow-hidden border border-dashed items-center justify-center relative">
-            {image ? (
-              <Image
-                src={image}
-                alt="Uploaded"
-                layout="fill"
-                objectFit="contain"
-              />
-            ) : (
-              <p>No image uploaded</p>
-            )}
-          </div>
-          <div className="flex justify-center w-full">
-            <input
-              type="file"
-              id="fileInput"
-              accept="image/*"
-              onChange={onImageChange}
-              style={{ display: "none" }}
-            />
-            <button
-              className="p-2 bg-blue-500 ring-1 ring-white rounded-lg mt-6"
-              onClick={() => document.getElementById("fileInput")?.click()}
-            >
-              Upload Image
-            </button>
-          </div>
+          <span className="text-center text-xl font-semibold">Input</span>
+          <Input file={file} setFile={setFile} />
         </div>
-        {/* <div className="h-80 min-h-[1em] w-0.5 bg-neutral-100 dark:bg-white/30" /> */}
-        <div className="p-2 bg-green-500 ring-1 ring-white rounded-lg w-fit">
+        <div className="p-2 bg-blue-500 rounded-lg w-fit">
           <button className="">{selectedProcess} |</button>
           <span className="align-middle">
             <Menu>
@@ -115,11 +82,17 @@ export default function Home() {
           </span>
         </div>
         <div className="flex flex-col gap-6 justify-center items-center h-full">
-          <span className="text-center text-xl">Output</span>
-          <ReactBeforeSliderComponent
-            firstImage={FIRST_IMAGE}
-            secondImage={SECOND_IMAGE}
-          />
+          <span className="text-center text-xl font-semibold">Result</span>
+          <div style={{ maxWidth: "300px", minHeight: "100px" }}>
+            {/* Container size */}
+            <ReactBeforeSliderComponent
+              firstImage={image ? { imageUrl: image } : FIRST_IMAGE}
+              secondImage={SECOND_IMAGE}
+              withResizeFeel={true}
+              feelsOnlyTheDelimiter={true}
+              delimiterColor="#ffffff"
+            />
+          </div>
         </div>
       </div>
     </main>

@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+.filepond--label-idle {
+  @apply text-white font-semibold;
+}
+
+.filepond--drop-label {
+  @apply flex justify-center items-center h-full bg-black rounded-lg border-blue-300 border-dashed border-2;
+}
+
+.filepond--label-action {
+  @apply underline cursor-pointer text-white hover:text-blue-300 font-semibold;
+}
+
 /* :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
