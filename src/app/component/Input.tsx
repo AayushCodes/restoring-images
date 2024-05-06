@@ -15,24 +15,13 @@ function FileInputComponent({
 }) {
   const handleUpdateFiles = (fileItems: any) => {
     setFile(fileItems.length > 0 ? fileItems[0].file : null);
-    getBase64(fileItems[0].file);
+    // if (file) getBase64(fileItems[0].file);
   };
-
-  function getBase64(file: any) {
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-      //me.modelvalue = reader.result;
-      console.log(reader.result);
-    };
-    reader.onerror = function (error) {
-      console.log("Error: ", error);
-    };
-  }
 
   return (
     <FilePond
       className="w-96 h-80"
+      // filename={file ? file.name : ""}
       files={file ? [file] : []}
       allowMultiple={false}
       allowProcess={true}

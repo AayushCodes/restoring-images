@@ -20,42 +20,70 @@ const SECOND_IMAGE = {
 
 export default function Home() {
   const [image, setImage] = useState<string | null>(null);
-  const [file, setFile] = useState();
+  const [resultImage, setResultImage] = useState<string | null>(null);
+  const [file, setFile] = useState<any>();
+  const [encodedImage, setEncodedImage] = useState<string>("");
   const [selectedProcess, setSelectedProcess] = useState("Select Process");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleMenuItemClick = (processName: string) => {
-    setSelectedProcess(processName);
-  };
+  console.log("file", file);
+  // console.log("encodedImage", encodedImage);
+
+  function getBase64(file: any) {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      //me.modelvalue = reader.result;
+      setEncodedImage(reader.result as string);
+    };
+    reader.onerror = function (error) {
+      console.log("Error: ", error);
+    };
+  }
 
   useEffect(() => {
     if (file) {
       setImage(URL.createObjectURL(file));
+      getBase64(file);
     }
   }, [file]);
+
+  const handleMenuItemClick = (processName: string) => {
+    setSelectedProcess(processName);
+  };
 
   const handleButtonClick = async () => {
     if (selectedProcess === "Select Process") {
       return;
     }
     setIsLoading(true);
-    const formData = new FormData();
-    if (file) {
-      formData.append("image", file);
-    }
-    formData.append("process", selectedProcess);
+
+    const processToModeMap: { [key: string]: number } = {
+      "Scratch Detection": 1,
+      "Scratch Removal": 2,
+      "Image Upscaling": 3,
+      "Image Color Restoration": 4,
+      "Face Restoration": 5,
+    };
+    const mode = processToModeMap[selectedProcess];
+
+    const payload = {
+      image_name: file.name,
+      mode: mode,
+      image: encodedImage,
+    };
+
     const res = await fetch("/api/process", {
       method: "POST",
-      body: formData,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
     });
-    const data = await res.json();
-    setImage(data.image);
-    setIsLoading(false);
-  };
 
-  const iconStyle = {
-    backgroundImage:
-      "url(https://www.flaticon.com/free-icon/double-arrow_724913)",
+    const data = await res.json();
+    setResultImage(data.image);
+    setIsLoading(false);
   };
 
   return (
@@ -104,6 +132,12 @@ export default function Home() {
                     >
                       Scratch removal
                     </MenuItem>
+                    <MenuItem
+                      bg="gray.200"
+                      onClick={() => handleMenuItemClick("Scratch Detection")}
+                    >
+                      Scratch Detection
+                    </MenuItem>
                   </MenuList>
                 </div>
               </Menu>
@@ -126,7 +160,6 @@ export default function Home() {
               withResizeFeel={true}
               feelsOnlyTheDelimiter={true}
               delimiterColor="#ffffff"
-              delimiterIconStyles={iconStyle}
             />
           </div>
         </div>
