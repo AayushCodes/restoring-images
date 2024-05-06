@@ -21,6 +21,7 @@ export default function Home() {
   const [image, setImage] = useState<string | null>(null);
   const [file, setFile] = useState();
   const [selectedProcess, setSelectedProcess] = useState("Select Process");
+  console.log(file);
 
   const handleMenuItemClick = (processName: string) => {
     setSelectedProcess(processName);
