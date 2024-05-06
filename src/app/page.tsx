@@ -52,7 +52,7 @@ export default function Home() {
       getBase64(file);
     } else {
       setImage(null);
-      setResultImage(null);
+      setResultImageURL(null);
     }
   }, [file]);
 
