@@ -5,7 +5,7 @@ import "react-before-after-slider-component/dist/build.css";
 // import Image from "next/image";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { IoIosArrowDropdown } from "react-icons/io";
-import { BsDownload } from "react-icons/bs";
+// import { BsDownload } from "react-icons/bs";
 import Navbar from "./component/Navbar";
 import Input from "./component/Input";
 import { ScaleLoader } from "react-spinners";
@@ -22,13 +22,11 @@ const SECOND_IMAGE = {
 export default function Home() {
   const [image, setImage] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [resultImageURL, setResultImageURL] = useState<string | null>(null);
   const [file, setFile] = useState<any>();
   const [encodedImage, setEncodedImage] = useState<string>("");
   const [selectedProcess, setSelectedProcess] = useState("Select Process");
   const [isLoading, setIsLoading] = useState(false);
-
-  // console.log("file", file);
-  // console.log("encodedImage", encodedImage);
 
   function getBase64(file: any) {
     let reader = new FileReader();
@@ -40,6 +38,12 @@ export default function Home() {
     reader.onerror = function (error) {
       console.log("Error: ", error);
     };
+  }
+
+  function encodedImageSplit(encodedImage: string) {
+    const parts = encodedImage.split(",");
+    const cleanBase64 = parts.pop();
+    return cleanBase64;
   }
 
   useEffect(() => {
@@ -74,47 +78,75 @@ export default function Home() {
     const payload = {
       image_name: file.name,
       mode: mode,
-      image: encodedImage,
+      image: encodedImageSplit(encodedImage),
     };
 
-    const res = await fetch("/api/process", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    try {
+      // const res = await fetch("https://9958-223-228-206-90.ngrok-free.app", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      //   body: JSON.stringify(payload),
+      // });
 
-    const data = await res.json();
-    setResultImage(data.image);
-    setIsLoading(false);
+      const res = await fetch("/api/process", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      setResultImage(data.image);
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const DownloadImage = (base64Image: string) => {
-    if (!base64Image) {
-      console.error("No image data available to download.");
+  const DownloadImage = (
+    imageUrl: string,
+    filename: string = "downloadedImage.png"
+  ) => {
+    if (!imageUrl) {
+      console.error("No image URL available to download.");
       return;
     }
-    const byteString = atob(base64Image.split(",")[1]);
-    const mimeString = base64Image.split(",")[0].split(":")[1].split(";")[0];
-    const ab = new ArrayBuffer(byteString.length);
-    const ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    const blob = new Blob([ab], { type: mimeString });
-
-    const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
-    link.href = url;
-    link.download = "downloadedImage.png";
+    link.href = imageUrl;
+    link.download = filename;
     document.body.appendChild(link);
     link.click();
 
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(imageUrl);
   };
+
+  useEffect(() => {
+    if (resultImage) createImageURL(resultImage);
+  }, [resultImage]);
+
+  function createImageURL(base64Image: string) {
+    const byteCharacters = atob(base64Image);
+
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: "image/png" });
+    const imageUrl = URL.createObjectURL(blob);
+    setResultImageURL(imageUrl);
+  }
 
   return (
     <main className="flex flex-col items-center justify-center bg-black font-sans h-screen w-screen text-white overflow-auto">
@@ -142,25 +174,25 @@ export default function Home() {
                       bg="gray.200"
                       onClick={() => handleMenuItemClick("Face Restoration")}
                     >
-                      Face restoration
+                      Face Restoration
                     </MenuItem>
                     <MenuItem
                       bg="gray.200"
                       onClick={() => handleMenuItemClick("Image Upscaling")}
                     >
-                      Image upscaling
+                      Image Upscaling
                     </MenuItem>
                     <MenuItem
                       bg="gray.200"
                       onClick={() => handleMenuItemClick("Color Correction")}
                     >
-                      Color correction
+                      Color Correction
                     </MenuItem>
                     <MenuItem
                       bg="gray.200"
                       onClick={() => handleMenuItemClick("Scratch Removal")}
                     >
-                      Scratch removal
+                      Scratch Removal
                     </MenuItem>
                     <MenuItem
                       bg="gray.200"
@@ -187,16 +219,18 @@ export default function Home() {
             >
               <ReactBeforeSliderComponent
                 firstImage={image ? { imageUrl: image } : FIRST_IMAGE}
-                secondImage={SECOND_IMAGE}
+                secondImage={
+                  resultImageURL ? { imageUrl: resultImageURL } : SECOND_IMAGE
+                }
                 withResizeFeel={true}
                 feelsOnlyTheDelimiter={true}
                 delimiterColor="#ffffff"
               />
             </div>
           </div>
-          {resultImage && (
+          {resultImageURL && (
             <button
-              onClick={() => resultImage && DownloadImage(resultImage)}
+              onClick={() => resultImageURL && DownloadImage(resultImageURL)}
               className="p-1 rounded-lg mt-2 text-sm w-full flex justify-center text-green-300 shadow-sm shadow-green-400"
             >
               {/* <BsDownload /> */}
