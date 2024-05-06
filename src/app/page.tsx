@@ -5,6 +5,7 @@ import "react-before-after-slider-component/dist/build.css";
 // import Image from "next/image";
 import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { IoIosArrowDropdown } from "react-icons/io";
+import { BsDownload } from "react-icons/bs";
 import Navbar from "./component/Navbar";
 import Input from "./component/Input";
 import { ScaleLoader } from "react-spinners";
@@ -26,7 +27,7 @@ export default function Home() {
   const [selectedProcess, setSelectedProcess] = useState("Select Process");
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log("file", file);
+  // console.log("file", file);
   // console.log("encodedImage", encodedImage);
 
   function getBase64(file: any) {
@@ -45,6 +46,9 @@ export default function Home() {
     if (file) {
       setImage(URL.createObjectURL(file));
       getBase64(file);
+    } else {
+      setImage(null);
+      setResultImage(null);
     }
   }, [file]);
 
@@ -84,6 +88,32 @@ export default function Home() {
     const data = await res.json();
     setResultImage(data.image);
     setIsLoading(false);
+  };
+
+  const DownloadImage = (base64Image: string) => {
+    if (!base64Image) {
+      console.error("No image data available to download.");
+      return;
+    }
+    const byteString = atob(base64Image.split(",")[1]);
+    const mimeString = base64Image.split(",")[0].split(":")[1].split(";")[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    const blob = new Blob([ab], { type: mimeString });
+
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "downloadedImage.png";
+    document.body.appendChild(link);
+    link.click();
+
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -144,24 +174,35 @@ export default function Home() {
             </span>
           </div>
         )}
-        <div className="flex flex-col gap-6 justify-center items-center h-full">
-          <span className="text-center text-xl font-semibold">Result</span>
-          <div
-            style={{
-              maxWidth: "400px",
-              minHeight: "100px",
-              maxHeight: "500px",
-            }}
-            className="ring-1 ring-white rounded-lg overflow-hidden"
-          >
-            <ReactBeforeSliderComponent
-              firstImage={image ? { imageUrl: image } : FIRST_IMAGE}
-              secondImage={SECOND_IMAGE}
-              withResizeFeel={true}
-              feelsOnlyTheDelimiter={true}
-              delimiterColor="#ffffff"
-            />
+        <div className="text-right">
+          <div className="flex flex-col gap-6 justify-center items-center h-full">
+            <span className="text-center text-xl font-semibold">Result</span>
+            <div
+              style={{
+                maxWidth: "400px",
+                minHeight: "100px",
+                maxHeight: "500px",
+              }}
+              className="ring-1 ring-white rounded-lg overflow-hidden"
+            >
+              <ReactBeforeSliderComponent
+                firstImage={image ? { imageUrl: image } : FIRST_IMAGE}
+                secondImage={SECOND_IMAGE}
+                withResizeFeel={true}
+                feelsOnlyTheDelimiter={true}
+                delimiterColor="#ffffff"
+              />
+            </div>
           </div>
+          {resultImage && (
+            <button
+              onClick={() => resultImage && DownloadImage(resultImage)}
+              className="p-1 rounded-lg mt-2 text-sm w-full flex justify-center text-green-300 shadow-sm shadow-green-400"
+            >
+              {/* <BsDownload /> */}
+              Download
+            </button>
+          )}
         </div>
       </div>
     </main>
